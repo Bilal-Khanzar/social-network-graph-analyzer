@@ -1,0 +1,11 @@
+{
+  "name": "Mesajlasma Agi (Maskeli)",
+  "nodes": ["Dugum_101", "Dugum_102", "Dugum_103", "Dugum_104", "Dugum_105"],
+  "edges": [
+    {"source": "Dugum_101", "target": "Dugum_102", "weight": 3},
+    {"source": "Dugum_101", "target": "Dugum_103", "weight": 3},
+    {"source": "Dugum_102", "target": "Dugum_104", "weight": 1},
+    {"source": "Dugum_103", "target": "Dugum_104", "weight": 1},
+    {"source": "Dugum_105", "target": "Dugum_104", "weight": 1}
+  ]
+}

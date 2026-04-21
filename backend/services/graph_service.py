@@ -1,7 +1,7 @@
 import networkx as nx
 import numpy as np
 from typing import Dict, List, Tuple, Optional
-from models.graph_models import GraphInput, IsomorphismResult, AnomalyNode, AnomalyResult
+from backend.models.graph_models import GraphInput, IsomorphismResult, AnomalyNode, AnomalyResult
 
 
 def build_nx_graph(graph_input: GraphInput) -> nx.Graph:
@@ -93,12 +93,12 @@ def detect_anomalies(graph_input: GraphInput) -> AnomalyResult:
 
     degrees = dict(G.degree())
     degree_values = list(degrees.values())
-    mean_deg = np.mean(degree_values)
+    mean_deg = np.mean(degree_values) if degree_values else 0
     std_deg = np.std(degree_values) if len(degree_values) > 1 else 0
 
     # Betweenness centrality
     betweenness = nx.betweenness_centrality(G)
-    mean_bet = np.mean(list(betweenness.values()))
+    mean_bet = np.mean(list(betweenness.values())) if betweenness else 0
     std_bet = np.std(list(betweenness.values())) if len(betweenness) > 1 else 0
 
     # Clustering coefficient
@@ -130,7 +130,7 @@ def detect_anomalies(graph_input: GraphInput) -> AnomalyResult:
         if score > 0.5:
             anomalies.append(AnomalyNode(
                 node=node,
-                score=round(score, 3),
+                score=round(float(score), 3),
                 reason="; ".join(reasons) if reasons else "Anomali tespit edildi"
             ))
 
@@ -147,17 +147,18 @@ def detect_anomalies(graph_input: GraphInput) -> AnomalyResult:
 def get_graph_stats(graph_input: GraphInput) -> Dict:
     """Graf istatistiklerini döndürür."""
     G = build_nx_graph(graph_input)
+    node_count = G.number_of_nodes()
     stats = {
-        "node_count": G.number_of_nodes(),
+        "node_count": node_count,
         "edge_count": G.number_of_edges(),
-        "is_connected": nx.is_connected(G) if G.number_of_nodes() > 0 else False,
+        "is_connected": nx.is_connected(G) if node_count > 0 else False,
         "density": round(nx.density(G), 4),
-        "avg_degree": round(sum(d for _, d in G.degree()) / max(G.number_of_nodes(), 1), 3),
+        "avg_degree": round(sum(d for _, d in G.degree()) / max(node_count, 1), 3),
     }
-    if G.number_of_nodes() > 0 and nx.is_connected(G):
+    if node_count > 0 and nx.is_connected(G):
         stats["diameter"] = nx.diameter(G)
         stats["avg_clustering"] = round(nx.average_clustering(G), 4)
     else:
         stats["diameter"] = None
-        stats["avg_clustering"] = round(nx.average_clustering(G), 4) if G.number_of_nodes() > 0 else 0
+        stats["avg_clustering"] = round(nx.average_clustering(G), 4) if node_count > 0 else 0
     return stats

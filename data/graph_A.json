@@ -1,0 +1,11 @@
+{
+  "name": "Telefon Trafigi",
+  "nodes": ["Lider", "Kurye1", "Kurye2", "Satici", "Yabanci"],
+  "edges": [
+    {"source": "Lider", "target": "Kurye1", "weight": 5},
+    {"source": "Lider", "target": "Kurye2", "weight": 5},
+    {"source": "Kurye1", "target": "Satici", "weight": 2},
+    {"source": "Kurye2", "target": "Satici", "weight": 2},
+    {"source": "Yabanci", "target": "Satici", "weight": 1}
+  ]
+}
