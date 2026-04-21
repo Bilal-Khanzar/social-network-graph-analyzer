@@ -1,0 +1,28 @@
+# 🧠 Sosyal Ağ Graf Analiz Sistemi
+
+FastAPI kullanılarak geliştirilmiş bu proje, sosyal ağ grafiklerini analiz eden, yapısal benzerlik (izomorfizm) kontrolü yapan ve anomali tespiti gerçekleştiren bir sistemdir.
+
+---
+
+## 🎯 Projenin Amacı
+
+Bu projenin amacı:
+
+- 📊 İki grafın yapısal olarak aynı olup olmadığını (izomorfizm) kontrol etmek
+- 🚨 Graf içerisindeki anormal (şüpheli) düğümleri tespit etmek
+- 📈 Grafik yapısını analiz ederek istatistikler üretmek
+- 🌐 Basit bir API ve frontend arayüzü sunmak
+
+---
+
+## 🏗️ Kullanılan Teknolojiler
+
+- **Backend:** FastAPI (Python)
+- **Graf İşlemleri:** NetworkX
+- **Matematiksel Hesaplama:** NumPy
+- **Frontend:** HTML, JavaScript
+- **Mimari:** Modüler yapı (routers, services, models)
+
+---
+
+## 📁 Proje Yapısı
