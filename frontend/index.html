@@ -2,19 +2,70 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Social Network Analyzer</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sosyal Ağ Analiz - Adli Bilişim Platformu</title>
+    <link rel="stylesheet" href="/frontend/style.css">
+    <style>
+        /* Ek CSS for better UI */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .button-group h4 {
+            margin: 0;
+            color: #333;
+            font-size: 14px;
+        }
+        #output {
+            max-height: 800px;
+            overflow-y: auto;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
-    <h1>🧠 Social Network Analyzer</h1>
+    <h1>🔐 Sosyal Ağ Analiz - Adli Bilişim Platformu</h1>
     <div class="container">
-        <div class="buttons">
-            <button onclick="loadGraph()">Graph İstatistikleri</button>
-            <button onclick="checkIso()">İzomorfizm Testi</button>
-            <button onclick="findAnomalies()">Anomali Tespiti</button>
+        <p style="color: #666; margin: 10px 0;">
+            📊 Graflar arası izomorfizm tespiti (VF2), K-clique analizi ve anomali deteksiyonu
+        </p>
+        
+        <div class="button-group">
+            <h4>📋 Temel İşlemler</h4>
+            <div class="button-grid">
+                <button onclick="loadGraph()">📊 Graf İstatistikleri</button>
+            </div>
         </div>
-        <pre id="output">Sonuçlar burada görünecek (Terminal gibi)...</pre>
+        
+        <div class="button-group">
+            <h4>🔗 İzomorfizm Analizi</h4>
+            <div class="button-grid">
+                <button onclick="checkIso()">🔗 İzomorfizm Testi (VF2)</button>
+                <button onclick="compareMatrices()">🔲 Matris Karşılaştırması</button>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <h4>⚠️ Anomali ve Suç Analizi</h4>
+            <div class="button-grid">
+                <button onclick="findAnomalies()">🚨 Anomali & K-Clique Tespiti</button>
+                <button onclick="generateForensicReport()">🔐 Adli Bilişim Raporu</button>
+            </div>
+        </div>
+        
+        <pre id="output">Sonuçlar burada görünecek...</pre>
     </div>
-    <script src="app.js"></script>
+    <script src="/frontend/app.js"></script>
 </body>
 </html>
