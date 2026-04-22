@@ -1,0 +1,25 @@
+# --- Python Sistem Dosyaları ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Sanal Ortam (Virtual Environment) ---
+# Arkadaşların bunu kendileri kuracak (pip install -r requirements.txt)
+venv/
+ENV/
+env/
+.venv/
+
+# --- IDE ve Editör Ayarları ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- İşletim Sistemi Çöpleri ---
+.DS_Store
+Thumbs.db
+
+# --- Loglar ve Geçici Dosyalar ---
+*.log
