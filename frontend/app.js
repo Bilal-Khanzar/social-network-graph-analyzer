@@ -1,11 +1,32 @@
 const API = "http://localhost:8000/api";
 
+const graph_A = {
+    name: "Telefon Trafigi",
+    nodes: ["Lider", "Kurye1", "Kurye2", "Satici", "Yabanci"],
+    edges: [
+        {source: "Lider", target: "Kurye1", weight: 5},
+        {source: "Lider", target: "Kurye2", weight: 5},
+        {source: "Kurye1", target: "Satici", weight: 2},
+        {source: "Kurye2", target: "Satici", weight: 2},
+        {source: "Yabanci", target: "Satici", weight: 1}
+    ]
+};
+
+const graph_B = {
+    name: "Maskeli Mesajlasma Agi",
+    nodes: ["Dugum_101", "Dugum_102", "Dugum_103", "Dugum_104", "Dugum_105"],
+    edges: [
+        {source: "Dugum_101", target: "Dugum_102", weight: 3},
+        {source: "Dugum_101", target: "Dugum_103", weight: 3},
+        {source: "Dugum_102", target: "Dugum_104", weight: 1},
+        {source: "Dugum_103", target: "Dugum_104", weight: 1},
+        {source: "Dugum_105", target: "Dugum_104", weight: 1}
+    ]
+};
+
 // ================== UTILITY FUNCTIONS ==================
 
 async function sendRequest(endpoint, body, method = "POST") {
-    const output = document.getElementById("output");
-    output.innerHTML = "<p style='color: blue;'>📡 İstek gönderiliyor...</p>";
-    
     try {
         const res = await fetch(`${API}${endpoint}`, {
             method: method,
@@ -23,6 +44,84 @@ async function sendRequest(endpoint, body, method = "POST") {
 function renderJSON(data, title = "Sonuç") {
     const output = document.getElementById("output");
     output.innerHTML = `<h3>${title}</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+}
+
+// ================== GRAPH VISUALIZATION (CYTOSCAPE) ==================
+
+function visualizeNetwork(graphData, containerId = 'cy', highlights = [], nodeColor = '#007bff') {
+    const output = document.getElementById(containerId);
+    if (!output) return;
+    output.style.display = 'block';
+
+    const elements = [];
+    
+    // Düğümleri ekle
+    graphData.nodes.forEach(node => {
+        const isHighlighted = highlights.includes(node);
+        elements.push({
+            data: { id: node, label: node },
+            classes: isHighlighted ? 'highlighted' : ''
+        });
+    });
+    
+    // Kenarları ekle
+    graphData.edges.forEach(edge => {
+        elements.push({
+            data: { 
+                id: `${edge.source}-${edge.target}`, 
+                source: edge.source, 
+                target: edge.target,
+                weight: edge.weight || 1
+            }
+        });
+    });
+
+    const cy = cytoscape({
+        container: document.getElementById(containerId),
+        elements: elements,
+        style: [
+            {
+                selector: 'node',
+                style: {
+                    'background-color': nodeColor,
+                    'label': 'data(label)',
+                    'color': '#333',
+                    'font-size': '12px',
+                    'text-valign': 'center',
+                    'text-halign': 'center',
+                    'width': '35px',
+                    'height': '35px',
+                    'border-width': '2px',
+                    'border-color': '#fff'
+                }
+            },
+            {
+                selector: '.highlighted',
+                style: {
+                    'background-color': '#dc3545',
+                    'line-color': '#dc3545',
+                    'target-arrow-color': '#dc3545',
+                    'transition-property': 'background-color',
+                    'transition-duration': '0.5s'
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    'width': 2,
+                    'line-color': '#999',
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle',
+                    'label': 'data(weight)',
+                    'font-size': '10px'
+                }
+            }
+        ],
+        layout: {
+            name: 'cose',
+            padding: 50
+        }
+    });
 }
 
 // ================== MATRIX VISUALIZATION ==================
@@ -58,32 +157,10 @@ function renderMatrix(matrix, nodes, title) {
 // ================== MATRIX COMPARISON ==================
 
 function compareMatrices() {
-    const graph_a = {
-        name: "Graf A",
-        nodes: ["Ali", "Veli", "Ayşe", "Mehmet"],
-        edges: [
-            {source: "Ali", target: "Veli", weight: 1},
-            {source: "Veli", target: "Ayşe", weight: 1},
-            {source: "Ayşe", target: "Mehmet", weight: 1},
-            {source: "Ali", target: "Mehmet", weight: 1}
-        ]
-    };
-    
-    const graph_b = {
-        name: "Graf B",
-        nodes: ["Düğüm1", "Düğüm2", "Düğüm3", "Düğüm4"],
-        edges: [
-            {source: "Düğüm1", target: "Düğüm2", weight: 1},
-            {source: "Düğüm2", target: "Düğüm3", weight: 1},
-            {source: "Düğüm3", target: "Düğüm4", weight: 1},
-            {source: "Düğüm1", target: "Düğüm4", weight: 1}
-        ]
-    };
-    
     (async () => {
         const result = await sendRequest("/analysis/matrix-comparison", {
-            graph_a: graph_a,
-            graph_b: graph_b
+            graph_a: graph_A,
+            graph_b: graph_B
         });
         
         if (!result) return;
@@ -109,30 +186,10 @@ function compareMatrices() {
 // ================== ISOMORPHISM ANALYSIS ==================
 
 function checkIso() {
-    const graph_a = {
-        name: "Suçlu Ağı A (Gerçek İsimler)",
-        nodes: ["Ali", "Veli", "Ayşe"],
-        edges: [
-            {source: "Ali", target: "Veli"},
-            {source: "Veli", target: "Ayşe"},
-            {source: "Ayşe", target: "Ali"}
-        ]
-    };
-    
-    const graph_b = {
-        name: "Maskeli Ağ B (Düğüm Kodları)",
-        nodes: ["Dugum1", "Dugum2", "Dugum3"],
-        edges: [
-            {source: "Dugum1", target: "Dugum2"},
-            {source: "Dugum2", target: "Dugum3"},
-            {source: "Dugum3", target: "Dugum1"}
-        ]
-    };
-    
     (async () => {
         const result = await sendRequest("/analysis/isomorphism", {
-            graph_a: graph_a,
-            graph_b: graph_b
+            graph_a: graph_A,
+            graph_b: graph_B
         });
         
         if (!result) return;
@@ -194,34 +251,18 @@ function checkIso() {
         }
         
         output.innerHTML = html;
+        
+        // AVANTAJLI GÖRÜNÜM: İki ağı yan yana çiz
+        visualizeNetwork(graph_A, 'cy', [], '#007bff'); 
+        visualizeNetwork(graph_B, 'cy2', [], '#28a745');
     })();
 }
 
 // ================== ANOMALY DETECTION ==================
 
 function findAnomalies() {
-    const testGraph = {
-        name: "Test Ağı (Anomali Deteksiyonu)",
-        nodes: ["A", "B", "C", "D", "E", "F", "G"],
-        edges: [
-            // Clique: A-B-C (üçgen)
-            {source: "A", target: "B"},
-            {source: "B", target: "C"},
-            {source: "C", target: "A"},
-            // D yüksek derece hub
-            {source: "D", target: "A"},
-            {source: "D", target: "B"},
-            {source: "D", target: "C"},
-            {source: "D", target: "E"},
-            {source: "D", target: "F"},
-            // Köprü: G
-            {source: "G", target: "D"},
-            {source: "G", target: "E"}
-        ]
-    };
-    
     (async () => {
-        const result = await sendRequest("/analysis/anomaly", testGraph);
+        const result = await sendRequest("/analysis/anomaly", graph_A);
         
         if (!result) return;
         
@@ -304,26 +345,19 @@ function findAnomalies() {
         }
         
         output.innerHTML = html;
+        
+        // Şüphelileri kırmızı ile vurgula
+        const suspects = result.anomalies.map(a => a.node);
+        document.getElementById('cy2').style.display = 'none'; // Tek grafik odağı
+        visualizeNetwork(graph_A, 'cy', suspects);
     })();
 }
 
 // ================== FORENSIC REPORT ==================
 
 function generateForensicReport() {
-    const testGraph = {
-        name: "Suçlu Ağı - Adli Analiz",
-        nodes: ["A", "B", "C", "D", "E", "F", "G", "H"],
-        edges: [
-            {source: "A", target: "B"}, {source: "B", target: "C"},
-            {source: "C", target: "A"}, {source: "D", target: "A"},
-            {source: "D", target: "B"}, {source: "D", target: "E"},
-            {source: "E", target: "F"}, {source: "F", target: "G"},
-            {source: "G", target: "H"}, {source: "H", target: "D"}
-        ]
-    };
-    
     (async () => {
-        const result = await sendRequest("/analysis/forensic-report", testGraph);
+        const result = await sendRequest("/analysis/forensic-report", graph_A);
         
         if (!result) return;
         
@@ -400,14 +434,29 @@ function generateForensicReport() {
         }
         
         output.innerHTML = html;
+        
+        // Komuta merkezlerini kırmızı ile işaretle
+        const centers = result.central_nodes.map(c => c.node);
+        document.getElementById('cy2').style.display = 'none';
+        visualizeNetwork(graph_A, 'cy', centers);
     })();
 }
 
 // ================== SAMPLE TESTS ==================
 
 function loadGraph() {
-    sendRequest("/graph/stats", {
-        nodes: ["Ali", "Veli", "Ayşe"],
-        edges: [{source: "Ali", target: "Veli", weight: 1}, {source: "Veli", target: "Ayşe", weight: 1}]
-    }).then(data => renderJSON(data, "📊 Graf İstatistikleri"));
+    (async () => {
+        const statsA = await sendRequest("/graph/stats", graph_A);
+        const statsB = await sendRequest("/graph/stats", graph_B);
+        
+        if (!statsA || !statsB) return;
+        
+        const combinedResults = {
+            "Graph_A_Telefon": statsA,
+            "Graph_B_Mesajlasma": statsB
+        };
+        
+        renderJSON(combinedResults, "📊 Graf İstatistikleri (A ve B)");
+        visualizeNetwork(graph_A); // Varsayılan olarak A'yı çiz
+    })();
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Mesajlasma Agi (Maskeli)",
+  "name": "Maskeli Mesajlasma Agi",
   "nodes": ["Dugum_101", "Dugum_102", "Dugum_103", "Dugum_104", "Dugum_105"],
   "edges": [
     {"source": "Dugum_101", "target": "Dugum_102", "weight": 3},
